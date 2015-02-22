@@ -1,0 +1,201 @@
+---
+title: "CodeBook.md"
+author: "Wahsabii Neandertal"
+date: "Friday, February 20, 2015"
+output: html_document
+---
+
+### Purpose: Combine the test and training data sets for analysis.
+
+***
+# Inputs
+
+### Variables for metadata and descriptive names
+- `labelsActivity` contain 'activity_labels.txt': Links the class labels with their activity name.
+- `namesFeatures` contain 'features.txt': List of all features.
+
+### Variables for Testing data from the uncompressed subdirectory in the project directory
+- `TestingSubject` contains 'test/subject_test.txt':  Each row identifies the subject who performed the activity for each window sample. Its range is from 1 to 30. 
+
+- `TestingFeatures` contain 'test/X_test.txt': Test set.
+
+- `TestingActivity` contains 'test/y_test.txt': Test labels.
+
+### Variables for Training data from the uncompressed subdirectory in the project directory
+- `TrainingSubject` contains 'train/subject_train.txt': Each row identifies the subject who performed the activity for each window sample. Its range is from 1 to 30. 
+
+- `TrainingFeatures` contain 'train/X_train.txt': Training set.
+
+- `TrainingActivity` contain 'train/y_train.txt': Training labels.
+
+###Notes: 
+- Features are normalized and bounded within [-1,1].
+- Each feature vector is a row on the text file.
+- The units used for the accelerations (total and body) are 'g's (gravity of earth -> 9.80665 m/seg2).
+- The gyroscope units are rad/seg.
+
+
+For more information about this dataset please contact: activityrecognition '@' smartlab.ws
+
+***
+# Process
+
+***
+### Part 1: Merges the training and the test sets to create one data set.
+- `activity` holds `TestingActivity` and `TrainingActivity` after combining 
+- `features` holds `TestingFeatures` and `TrainingFeatures` after combining
+- `subject`  holds `TestingSubject` and `TrainingSubject` after combining
+
+#### Descriptive feature names are added to the data columns after tranposing the column to a row vector
+- `namesFeatures$V2` transposed from a row to a column vector
+
+#### Make the final data product for analysis
+- Name the variable columns in `activity` and `features` vector to "Activity" and "Subjet" respectively
+- `mergedDataset` holds `subject`, `activity`, and `features` after combining them
+
+***
+### Part 2: Extracts only the measurements on the mean and standard deviation for each measurement.
+- `statistics` holds the Mean and Standard Deviation variables from `mergedDataset`
+
+#### Identify columns with mean and standard diviation stastics
+- `statisticalColumns`  prepare to subset 'mergedDataset` with Subject, Activity, mean and standard deviation variables. 
+
+
+#### Subset the merged data set to only the statistics data set
+- `statisticalData` is the subset of mergedDataset with Subject, Activity, mean and standard deviation variables.
+
+***
+### Part 3: Uses descriptive activity names to name the activities in the data set
+- `statisticalData$Activity`  converted to character
+
+#### Iterate through activity labels, subsitute the activity description from column 2 into the data
+- `description` holds the integer two for the second column that has the description
+- `row` is the for loo index used to substitute the numeric to a text description from `statisticalData$Activity` after converting to a character 
+
+- `statisticalData$Activity` change to factor once the loop is complete
+
+***
+### Part 4. Appropriately labels the data set with descriptive variable names. 
+
+
+#### Use grep to unabbreviate the vairable names of `statisticalData`, changed:
+- "Acc" to "Accelerometer"  
+- "Gyro" to "Gyroscope"  
+- "BodyBody" to "Body"  
+- "Mag" to "Magnitude"  
+- "^t" to "Time"  
+- "^f" to "Frequency"  
+- "tBody" to "TimeBody"  
+- "-mean()" to "Mean"
+- "-std()" to "StandardDeviation"  
+- "-freq()" to "Frequency"  
+- "angle" to "Angle"  
+- "gravity" to "Gravity"    
+- "X" to "X-Coordinate"
+- "Y" to "Y-Coordinate"
+- "Z" to "Z-Coordinate"  
+
+
+***
+# Outputs
+
+***
+### Part 5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+- `answer` initial null data.table
+- `answer` becomes is the result of chaining `statisticalData` to group_by then summarize by mean  
+- `answer` written to the working directory as `Tidy.txt`   
+
+30 subject's six activities of laying, sitting, standing, walking, walking downstairs, walking upstairs (180 observations) are averaged across 88 variables.
+
+#### Tidy.txt variable names are the following:
+-   [1] "Subject"                                                       
+-   [2] "Activity"                                                      
+-   [3] "TimeBodyAccelerometerMean()-X-Coordinate"                      
+-   [4] "TimeBodyAccelerometerMean()-Y-Coordinate"                      
+-   [5] "TimeBodyAccelerometerMean()-Z-Coordinate"                      
+-   [6] "TimeBodyAccelerometerStandardDeviation()-X-Coordinate"         
+-   [7] "TimeBodyAccelerometerStandardDeviation()-Y-Coordinate"         
+-   [8] "TimeBodyAccelerometerStandardDeviation()-Z-Coordinate"         
+-   [9] "TimeGravityAccelerometerMean()-X-Coordinate"                   
+-  [10] "TimeGravityAccelerometerMean()-Y-Coordinate"                   
+-  [11] "TimeGravityAccelerometerMean()-Z-Coordinate"                   
+-  [12] "TimeGravityAccelerometerStandardDeviation()-X-Coordinate"      
+-  [13] "TimeGravityAccelerometerStandardDeviation()-Y-Coordinate"      
+-  [14] "TimeGravityAccelerometerStandardDeviation()-Z-Coordinate"      
+-  [15] "TimeBodyAccelerometerJerkMean()-X-Coordinate"                  
+-  [16] "TimeBodyAccelerometerJerkMean()-Y-Coordinate"                  
+-  [17] "TimeBodyAccelerometerJerkMean()-Z-Coordinate"                  
+-  [18] "TimeBodyAccelerometerJerkStandardDeviation()-X-Coordinate"     
+-  [19] "TimeBodyAccelerometerJerkStandardDeviation()-Y-Coordinate"     
+-  [20] "TimeBodyAccelerometerJerkStandardDeviation()-Z-Coordinate"     
+-  [21] "TimeBodyGyroscopeMean()-X-Coordinate"                          
+-  [22] "TimeBodyGyroscopeMean()-Y-Coordinate"                          
+-  [23] "TimeBodyGyroscopeMean()-Z-Coordinate"                          
+-  [24] "TimeBodyGyroscopeStandardDeviation()-X-Coordinate"             
+-  [25] "TimeBodyGyroscopeStandardDeviation()-Y-Coordinate"             
+-  [26] "TimeBodyGyroscopeStandardDeviation()-Z-Coordinate"             
+-  [27] "TimeBodyGyroscopeJerkMean()-X-Coordinate"                      
+-  [28] "TimeBodyGyroscopeJerkMean()-Y-Coordinate"                      
+-  [29] "TimeBodyGyroscopeJerkMean()-Z-Coordinate"                      
+-  [30] "TimeBodyGyroscopeJerkStandardDeviation()-X-Coordinate"         
+-  [31] "TimeBodyGyroscopeJerkStandardDeviation()-Y-Coordinate"         
+-  [32] "TimeBodyGyroscopeJerkStandardDeviation()-Z-Coordinate"         
+-  [33] "TimeBodyAccelerometerMagnitudeMean()"                          
+-  [34] "TimeBodyAccelerometerMagnitudeStandardDeviation()"             
+-  [35] "TimeGravityAccelerometerMagnitudeMean()"                       
+-  [36] "TimeGravityAccelerometerMagnitudeStandardDeviation()"          
+-  [37] "TimeBodyAccelerometerJerkMagnitudeMean()"                      
+-  [38] "TimeBodyAccelerometerJerkMagnitudeStandardDeviation()"         
+-  [39] "TimeBodyGyroscopeMagnitudeMean()"                              
+-  [40] "TimeBodyGyroscopeMagnitudeStandardDeviation()"                 
+-  [41] "TimeBodyGyroscopeJerkMagnitudeMean()"                          
+-  [42] "TimeBodyGyroscopeJerkMagnitudeStandardDeviation()"             
+-  [43] "FrequencyBodyAccelerometerMean()-X-Coordinate"                 
+-  [44] "FrequencyBodyAccelerometerMean()-Y-Coordinate"                 
+-  [45] "FrequencyBodyAccelerometerMean()-Z-Coordinate"                 
+-  [46] "FrequencyBodyAccelerometerStandardDeviation()-X-Coordinate"    
+-  [47] "FrequencyBodyAccelerometerStandardDeviation()-Y-Coordinate"    
+-  [48] "FrequencyBodyAccelerometerStandardDeviation()-Z-Coordinate"    
+-  [49] "FrequencyBodyAccelerometerMeanFreq()-X-Coordinate"             
+-  [50] "FrequencyBodyAccelerometerMeanFreq()-Y-Coordinate"             
+-  [51] "FrequencyBodyAccelerometerMeanFreq()-Z-Coordinate"             
+-  [52] "FrequencyBodyAccelerometerJerkMean()-X-Coordinate"             
+-  [53] "FrequencyBodyAccelerometerJerkMean()-Y-Coordinate"             
+-  [54] "FrequencyBodyAccelerometerJerkMean()-Z-Coordinate"             
+-  [55] "FrequencyBodyAccelerometerJerkStandardDeviation()-X-Coordinate"
+-  [56] "FrequencyBodyAccelerometerJerkStandardDeviation()-Y-Coordinate"
+-  [57] "FrequencyBodyAccelerometerJerkStandardDeviation()-Z-Coordinate"
+-  [58] "FrequencyBodyAccelerometerJerkMeanFreq()-X-Coordinate"         
+-  [59] "FrequencyBodyAccelerometerJerkMeanFreq()-Y-Coordinate"         
+-  [60] "FrequencyBodyAccelerometerJerkMeanFreq()-Z-Coordinate"         
+-  [61] "FrequencyBodyGyroscopeMean()-X-Coordinate"                     
+-  [62] "FrequencyBodyGyroscopeMean()-Y-Coordinate"                     
+-  [63] "FrequencyBodyGyroscopeMean()-Z-Coordinate"                     
+-  [64] "FrequencyBodyGyroscopeStandardDeviation()-X-Coordinate"        
+-  [65] "FrequencyBodyGyroscopeStandardDeviation()-Y-Coordinate"        
+-  [66] "FrequencyBodyGyroscopeStandardDeviation()-Z-Coordinate"        
+-  [67] "FrequencyBodyGyroscopeMeanFreq()-X-Coordinate"                 
+-  [68] "FrequencyBodyGyroscopeMeanFreq()-Y-Coordinate"                 
+-  [69] "FrequencyBodyGyroscopeMeanFreq()-Z-Coordinate"                 
+-  [70] "FrequencyBodyAccelerometerMagnitudeMean()"                     
+-  [71] "FrequencyBodyAccelerometerMagnitudeStandardDeviation()"        
+-  [72] "FrequencyBodyAccelerometerMagnitudeMeanFreq()"                 
+-  [73] "FrequencyBodyAccelerometerJerkMagnitudeMean()"                 
+-  [74] "FrequencyBodyAccelerometerJerkMagnitudeStandardDeviation()"    
+-  [75] "FrequencyBodyAccelerometerJerkMagnitudeMeanFreq()"             
+-  [76] "FrequencyBodyGyroscopeMagnitudeMean()"                         
+-  [77] "FrequencyBodyGyroscopeMagnitudeStandardDeviation()"            
+-  [78] "FrequencyBodyGyroscopeMagnitudeMeanFreq()"                     
+-  [79] "FrequencyBodyGyroscopeJerkMagnitudeMean()"                     
+-  [80] "FrequencyBodyGyroscopeJerkMagnitudeStandardDeviation()"        
+-  [81] "FrequencyBodyGyroscopeJerkMagnitudeMeanFreq()"                 
+-  [82] "Angle(TimeBodyAccelerometerMean,Gravity)"                      
+-  [83] "Angle(TimeBodyAccelerometerJerkMean),GravityMean)"             
+-  [84] "Angle(TimeBodyGyroscopeMean,GravityMean)"                      
+-  [85] "Angle(TimeBodyGyroscopeJerkMean,GravityMean)"                  
+-  [86] "Angle(X-Coordinate,GravityMean)"                               
+-  [87] "Angle(Y-Coordinate,GravityMean)"                               
+-  [88] "Angle(Z-Coordinate,GravityMean)"
+
+
+
