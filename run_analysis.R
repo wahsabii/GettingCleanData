@@ -23,7 +23,6 @@
 # explains how all of the scripts work and how they are connected.
 
 library(dplyr)
-library(tidyr)
 library(data.table)
 
 # Get the data into R
